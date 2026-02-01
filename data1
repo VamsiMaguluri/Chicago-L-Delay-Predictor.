@@ -1,0 +1,41 @@
+import requests
+import pandas as pd
+import time
+from datetime import datetime
+
+# --- SETTINGS ---
+API_KEY = 'f351df860eb7474f8b49f602e5a0509c'  # Put your key here!
+STATION_ID = '40590'  # Damen Blue Line
+FILE_NAME = 'data/cta_train_data.csv'
+
+
+def fetch_arrivals():
+    # URL for JSON arrival predictions
+    url = f"http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key={API_KEY}&mapid={STATION_ID}&outputType=JSON"
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        # Pull out the "eta" (Estimated Time of Arrival) list
+        arrivals = data['ctatt']['eta']
+
+        # Convert to a Table (DataFrame)
+        df = pd.DataFrame(arrivals)
+
+        # Add a timestamp so we know when we collected this
+        df['collection_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Save to CSV (append mode so it keeps adding new rows)
+        df.to_csv(FILE_NAME, mode='a', index=False, header=not pd.io.common.file_exists(FILE_NAME))
+        print(f"Successfully saved {len(df)} arrivals at {df['collection_time'].iloc[0]}")
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+# --- RUN EVERY 1 MINUTE ---
+print("Starting Data Collection... Press Ctrl+C to stop.")
+while True:
+    fetch_arrivals()
+    time.sleep(60)  # Wait 60 seconds
