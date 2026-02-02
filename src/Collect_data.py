@@ -5,11 +5,10 @@ import os
 from datetime import datetime
 
 # --- SETTINGS ---
-API_KEY = 'f351df860eb7474f8b49f602e5a0509c'  # Replace with your actual key!
+API_KEY = 'f351df860eb7474f8b49f602e5a0509c'  
 STATION_ID = '40590'  # Damen Blue Line
 FILE_NAME = '../data/cta_train_data.csv'
 
-# 1. THE PRO FIX: Create the 'data' folder if it doesn't exist
 if not os.path.exists('../data'):
     os.makedirs('../data')
     print("Created 'data' directory!")
